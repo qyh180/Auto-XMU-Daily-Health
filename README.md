@@ -9,7 +9,8 @@
 
 ### 如何设置每天定时自动执行脚本？
 参考文章==><https://www.cnblogs.com/js1314/p/11480655.html>
-需要注意的是 选择的程序时SignIn.exe。并且在起始于处按如下填写![](https://cdn.jsdelivr.net/gh/qyh180/figure@master/img/%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9.png)
+需要注意的是 选择的程序时SignIn.exe。并且在起始于处按如下填写
+![](https://cdn.jsdelivr.net/gh/qyh180/figure@master/img/%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9.png)
 
 ### 使用前在acount.txt中填写相关信息
 
