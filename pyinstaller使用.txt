@@ -1,0 +1,1 @@
+pyinstaller  -F -i xxx.ico main.py  使用图标
