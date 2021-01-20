@@ -19,11 +19,11 @@ def sendemail(receivers, subject, content):
     # 163邮箱服务器地址
     mail_host = 'smtp.163.com'
     # 163用户名
-    mail_user = 'xxxxxx'
+    mail_user = 'xxxxxxxx'
     # 密码(部分邮箱为授权码)
-    mail_pass = 'XXX'  # 此时隐去密码，可以替换成自己的授权密码
+    mail_pass = 'xxxxxxxx'  # 此时隐去密码，可以替换成自己的授权密码
     # 邮件发送方邮箱地址
-    sender = 'xxxx@163.COM'
+    sender = 'xxxxxxxx'
     # 邮件接受方邮箱地址，注意需要[]包裹，这意味着你可以写多个邮件地址群发
 
     print(content)
@@ -53,6 +53,7 @@ def Sigin_Daily_Health_Report(acount, pwd):
     option = webdriver.ChromeOptions()
     option.add_argument('headless')
     driver = webdriver.Chrome(chrome_options=option, executable_path='chromedriver.exe')
+    # driver = webdriver.Chrome(executable_path='chromedriver.exe')
     driver.maximize_window()
     try:
         driver.get('https://ids.xmu.edu.cn/authserver/login?service=https://xmuxg.xmu.edu.cn/login/cas/xmu')
@@ -60,7 +61,6 @@ def Sigin_Daily_Health_Report(acount, pwd):
 
         driver.find_element_by_id('username').clear()
         driver.find_element_by_id('username').send_keys(acount)
-
         driver.find_element_by_id('password').clear()
         driver.find_element_by_id('password').send_keys(pwd)
         # 登录这个按钮很奇怪，它的xpath里的数字会在4和5来回变化，所以用try结构
@@ -69,6 +69,7 @@ def Sigin_Daily_Health_Report(acount, pwd):
         except:
             driver.find_element_by_xpath('//*[@id="casLoginForm"]/p[4]/button').click()
         # 点击Daily Health Report
+        driver.implicitly_wait(5)
         driver.find_element_by_xpath(
             '//*[@id="mainPage-page"]/div[1]/div[3]/div[2]/div[2]/div[3]/div/div[1]/div[2]/div[1]').click()
         time.sleep(1)
@@ -94,19 +95,30 @@ def Sigin_Daily_Health_Report(acount, pwd):
             driver.switch_to.alert.accept()
 
             time.sleep(0.5)
-            print('打卡已成功')
+            # print('打卡已成功')
         else:
-            print('打卡已成功')
+            print('已打卡')
 
+        time.sleep(5)
         driver.get('https://xmuxg.xmu.edu.cn/schoolcustom/demo')
         How_Many_day = driver.find_element_by_xpath('//*[@id="clockDay"]').text
+        driver.get('https://xmuxg.xmu.edu.cn/app/221')
+        driver.find_element_by_xpath('//*[@id="mainM"]/div/div/div/div[1]/div[2]/div/div[3]/div[2]').click()
+        No_signin_date = driver.find_element_by_xpath("//div[@class='form-control']/span[@class='btn-content']").text
+        xpath_urls1 = '//*[@id="input_1607425852064"]/input'
+        Should_signin_days = driver.find_element_by_xpath(xpath_urls1)
+        Should_signin_day = Should_signin_days.get_attribute("data-str")
+
+        xpath_urls2 = '//div[@id="input_1607425859323"]/input'
+        have_signin_days = driver.find_element_by_xpath(xpath_urls2)
+        have_signin_day = have_signin_days.get_attribute("data-str")
         driver.quit()
-        content = '打卡成功！我{}啦'.format(How_Many_day)
+        content = '打卡成功！我{}啦！\n最近一次未打卡日期是：{}。\n应打卡{}天，已打卡{}天，打卡率：{:.2%}。'.format(How_Many_day,No_signin_date,Should_signin_day,have_signin_day,float(have_signin_day)/float(Should_signin_day))
         sendemail(receivers=receivers, subject='打卡成功', content=content)
         print(content)
     except Exception as e:
-        content = '失败原因：{}'.format(str(e))
-        # sendemail(receivers=receivers, subject='打卡失败', content=content)
+        content = '很抱歉，自动打卡失败，失败原因：{}。\n请登入系统完成打卡。'.format(str(e))
+        sendemail(receivers=receivers, subject='打卡失败', content=content)
         print('打卡失败')
         print(content)
         driver.quit()
